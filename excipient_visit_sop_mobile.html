@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>賦形劑客戶詢問 SOP｜拜訪紀錄產生器</title>
+  <style>
+    :root {
+      --bg: #f4f8fb;
+      --card: #ffffff;
+      --text: #24313f;
+      --muted: #6f7f8f;
+      --primary: #1d7f8c;
+      --primary-dark: #145e68;
+      --soft: #e7f5f7;
+      --line: #d9e6ec;
+      --warn: #fff4df;
+      --warn-text: #8a5a00;
+      --shadow: 0 12px 30px rgba(21, 71, 91, 0.1);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Microsoft JhengHei", "Noto Sans TC", Arial, sans-serif;
+      background: radial-gradient(circle at top left, #e3f5f7 0, transparent 32%), var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(244, 248, 251, 0.9);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .nav {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .brand {
+      font-weight: 800;
+      color: var(--primary-dark);
+      letter-spacing: .02em;
+    }
+
+    .nav-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    button, .ghost-btn {
+      border: 0;
+      border-radius: 999px;
+      padding: 10px 16px;
+      cursor: pointer;
+      font-weight: 700;
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 8px 18px rgba(29, 127, 140, .2);
+    }
+
+    button:hover { background: var(--primary-dark); }
+
+    .ghost-btn {
+      background: white;
+      color: var(--primary-dark);
+      border: 1px solid var(--line);
+      box-shadow: none;
+    }
+
+    main {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 28px 18px 60px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, rgba(255,255,255,.95), rgba(232,247,249,.95));
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      padding: 26px;
+      box-shadow: var(--shadow);
+      margin-bottom: 22px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -50px;
+      top: -40px;
+      width: 190px;
+      height: 190px;
+      border-radius: 50%;
+      background: rgba(29,127,140,.08);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(26px, 4vw, 42px);
+      color: var(--primary-dark);
+      line-height: 1.2;
+    }
+
+    .subtitle {
+      margin: 0;
+      max-width: 820px;
+      color: var(--muted);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 390px;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px;
+      margin-bottom: 18px;
+    }
+
+    .card h2 {
+      margin: 0 0 14px;
+      color: var(--primary-dark);
+      font-size: 22px;
+    }
+
+    .section-note {
+      color: var(--muted);
+      margin: -6px 0 14px;
+      font-size: 14px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    label.field-label {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: #355062;
+    }
+
+    input[type="text"], input[type="date"], textarea, select {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: #fbfdfe;
+      border-radius: 12px;
+      padding: 11px 12px;
+      font-size: 15px;
+      outline: none;
+    }
+
+    textarea { min-height: 92px; resize: vertical; }
+
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(29,127,140,.1);
+    }
+
+    .chips {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(142px, 1fr));
+      gap: 10px;
+    }
+
+    .chip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fbfdfe;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .chip input { accent-color: var(--primary); }
+
+    .chip:hover { border-color: var(--primary); background: var(--soft); }
+
+    .question-box {
+      background: var(--soft);
+      border-left: 5px solid var(--primary);
+      padding: 13px 15px;
+      border-radius: 14px;
+      margin-bottom: 14px;
+      color: #264f58;
+      font-weight: 700;
+    }
+
+    .sticky-panel {
+      position: sticky;
+      top: 78px;
+    }
+
+    .output {
+      white-space: pre-wrap;
+      background: #fbfdfe;
+      border: 1px dashed #b9d4dc;
+      border-radius: 14px;
+      padding: 14px;
+      min-height: 280px;
+      font-size: 14px;
+    }
+
+    .task-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .task {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      background: #fbfdfe;
+      border: 1px solid var(--line);
+      padding: 10px;
+      border-radius: 12px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 3px 9px;
+      background: var(--warn);
+      color: var(--warn-text);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .footer-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .small {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    @media (max-width: 920px) {
+      .grid { grid-template-columns: 1fr; }
+      .sticky-panel { position: static; }
+      .form-row { grid-template-columns: 1fr; }
+      .nav { align-items: flex-start; flex-direction: column; }
+      .nav-actions { justify-content: flex-start; }
+      button, .ghost-btn { width: 100%; }
+      .nav-actions { width: 100%; }
+    }
+
+    @media print {
+      header, .nav-actions, .footer-actions, button, .ghost-btn { display: none !important; }
+      body { background: white; }
+      .grid { display: block; }
+      .card, .hero { box-shadow: none; break-inside: avoid; }
+      .sticky-panel { position: static; }
+    }
+  </style>
+
+<style>
+@media (max-width: 768px){
+  .toolbar-actions{display:none;}
+  .toolbar-actions.show{display:flex;flex-direction:column;gap:8px;margin-top:8px;}
+  .toolbar-toggle{display:block !important;width:100%;}
+}
+@media (min-width: 769px){
+  .toolbar-toggle{display:none !important;}
+}
+</style>
+<script>
+document.addEventListener('DOMContentLoaded',function(){
+  const toolbar=document.querySelector('.toolbar-actions');
+  const btn=document.querySelector('.toolbar-toggle');
+  if(btn && toolbar){
+    btn.addEventListener('click',function(){
+      toolbar.classList.toggle('show');
+    });
+  }
+});
+</script>
+
+</head>
+<body>
+  <header>
+    <div class="nav">
+      <div class="brand">賦形劑客戶詢問 SOP</div>
+      <div class="nav-actions">
+        <button onclick="generateReport()">產生拜訪紀錄</button>
+        <button class="ghost-btn" onclick="copyReport()">複製紀錄</button>
+        <button class="ghost-btn" onclick="window.print()">列印 / 另存 PDF</button>
+        <button class="ghost-btn" onclick="resetForm()">清空</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1>賦形劑客戶詢問 SOP</h1>
+      <p class="subtitle">業務拜訪時依序確認：劑型、功能、開發階段、API 特性、法規文件、市場、用量、目前使用品項。填完後可自動生成拜訪紀錄與後續追蹤清單。</p>
+    </section>
+
+    <div class="grid">
+      <div>
+        <section class="card">
+          <h2>一、基本資料</h2>
+          <div class="form-row">
+            <div><label class="field-label">客戶公司</label><input id="company" type="text" placeholder="例：XX 製藥 / XX 生技" /></div>
+            <div><label class="field-label">聯絡人</label><input id="contact" type="text" placeholder="姓名 / 部門 / 職稱" /></div>
+            <div><label class="field-label">拜訪日期</label><input id="date" type="date" /></div>
+            <div><label class="field-label">拜訪方式</label><select id="visitType"><option>電話</option><option>Email</option><option>現場拜訪</option><option>展會接觸</option><option>LINE / 通訊軟體</option></select></div>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>二、確認劑型</h2>
+          <div class="question-box">建議話術：請問目前是開發哪一種劑型呢？</div>
+          <div class="chips" data-group="dosage">
+            <label class="chip"><input type="checkbox" value="錠劑 Tablet">錠劑</label>
+            <label class="chip"><input type="checkbox" value="膠囊 Capsule">膠囊</label>
+            <label class="chip"><input type="checkbox" value="顆粒 Granule">顆粒</label>
+            <label class="chip"><input type="checkbox" value="粉末 Powder">粉末</label>
+            <label class="chip"><input type="checkbox" value="口服液 Oral Solution">口服液</label>
+            <label class="chip"><input type="checkbox" value="懸浮液 Suspension">懸浮液</label>
+            <label class="chip"><input type="checkbox" value="軟膏 Ointment">軟膏</label>
+            <label class="chip"><input type="checkbox" value="注射劑 Injectable">注射劑</label>
+          </div>
+          <p><input id="dosageOther" type="text" placeholder="其他劑型補充" /></p>
+        </section>
+
+        <section class="card">
+          <h2>三、確認賦形劑功能</h2>
+          <div class="question-box">建議話術：這個賦形劑主要希望扮演什麼功能？</div>
+          <div class="chips" data-group="function">
+            <label class="chip"><input type="checkbox" value="Diluent 填充劑">填充劑</label>
+            <label class="chip"><input type="checkbox" value="Binder 黏合劑">黏合劑</label>
+            <label class="chip"><input type="checkbox" value="Disintegrant 崩散劑">崩散劑</label>
+            <label class="chip"><input type="checkbox" value="Lubricant 潤滑劑">潤滑劑</label>
+            <label class="chip"><input type="checkbox" value="Coating 包衣材料">包衣材料</label>
+            <label class="chip"><input type="checkbox" value="Solubilizer 增溶劑">增溶劑</label>
+            <label class="chip"><input type="checkbox" value="Suspending Agent 懸浮劑">懸浮劑</label>
+            <label class="chip"><input type="checkbox" value="Preservative 防腐劑">防腐劑</label>
+          </div>
+          <p><input id="functionOther" type="text" placeholder="其他功能補充" /></p>
+        </section>
+
+        <section class="card">
+          <h2>四、確認開發階段</h2>
+          <div class="question-box">建議話術：目前是在研發、試量產，還是已經商業化量產？</div>
+          <div class="chips" data-group="stage">
+            <label class="chip"><input type="radio" name="stage" value="Pre-formulation 前期處方研究">前期處方</label>
+            <label class="chip"><input type="radio" name="stage" value="Lab Scale 實驗室開發">Lab Scale</label>
+            <label class="chip"><input type="radio" name="stage" value="Pilot Scale 試量產">Pilot Scale</label>
+            <label class="chip"><input type="radio" name="stage" value="Commercial Scale 商業化量產">Commercial</label>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>五、確認 API / 處方痛點</h2>
+          <div class="question-box">建議話術：API 或目前處方有沒有遇到特殊狀況？例如溶解度、流動性、吸濕、壓錠等問題。</div>
+          <div class="chips" data-group="api">
+            <label class="chip"><input type="checkbox" value="水溶性差">水溶性差</label>
+            <label class="chip"><input type="checkbox" value="吸濕性高">吸濕性高</label>
+            <label class="chip"><input type="checkbox" value="熱敏感">熱敏感</label>
+            <label class="chip"><input type="checkbox" value="流動性差">流動性差</label>
+            <label class="chip"><input type="checkbox" value="壓錠困難">壓錠困難</label>
+            <label class="chip"><input type="checkbox" value="客戶目前不清楚">不清楚</label>
+          </div>
+          <p><textarea id="painPoint" placeholder="補充客戶痛點、目前卡關處、希望改善的問題"></textarea></p>
+        </section>
+
+        <section class="card">
+          <h2>六、確認法規與文件需求</h2>
+          <div class="question-box">建議話術：貴司對文件是否有特別要求？例如 DMF、GMP、TSE/BSE、殘留溶劑等。</div>
+          <div class="chips" data-group="docs">
+            <label class="chip"><input type="checkbox" value="DMF">DMF</label>
+            <label class="chip"><input type="checkbox" value="CEP">CEP</label>
+            <label class="chip"><input type="checkbox" value="GMP">GMP</label>
+            <label class="chip"><input type="checkbox" value="COA">COA</label>
+            <label class="chip"><input type="checkbox" value="TDS / Specification">TDS / Spec</label>
+            <label class="chip"><input type="checkbox" value="TSE/BSE Statement">TSE/BSE</label>
+            <label class="chip"><input type="checkbox" value="Residual Solvent Statement">殘留溶劑</label>
+            <label class="chip"><input type="checkbox" value="Nitrosamine Statement">Nitrosamine</label>
+            <label class="chip"><input type="checkbox" value="Allergen Statement">Allergen</label>
+          </div>
+          <p><input id="docOther" type="text" placeholder="其他文件需求" /></p>
+        </section>
+
+        <section class="card">
+          <h2>七、市場、用量與目前品項</h2>
+          <div class="form-row">
+            <div>
+              <label class="field-label">目標市場</label>
+              <select id="market"><option>台灣</option><option>美國</option><option>歐洲</option><option>日本</option><option>東南亞</option><option>全球市場</option><option>未定</option></select>
+            </div>
+            <div>
+              <label class="field-label">預估需求量</label>
+              <select id="volume"><option>樣品需求</option><option>1–5 kg</option><option>5–25 kg</option><option>25–100 kg</option><option>100 kg 以上</option><option>每年噸級需求</option><option>尚未確認</option></select>
+            </div>
+          </div>
+          <label class="field-label">目前使用品項 / 競品 / 參考品牌</label>
+          <input id="currentProduct" type="text" placeholder="例：MCC PH102、HPMC、PEG 4000、Crospovidone、Lactose Monohydrate" />
+          <br><br>
+          <label class="field-label">客戶希望我們提供什麼？</label>
+          <div class="chips" data-group="next">
+            <label class="chip"><input type="checkbox" value="寄產品型錄 / TDS">寄型錄/TDS</label>
+            <label class="chip"><input type="checkbox" value="確認規格與文件">確認規格文件</label>
+            <label class="chip"><input type="checkbox" value="提供樣品">提供樣品</label>
+            <label class="chip"><input type="checkbox" value="提供報價">提供報價</label>
+            <label class="chip"><input type="checkbox" value="安排原廠 / 技術討論">技術討論</label>
+            <label class="chip"><input type="checkbox" value="確認交期與庫存">確認交期庫存</label>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>八、業務判斷</h2>
+          <p class="section-note">用來判斷下一步要直接報價、推薦產品，還是轉技術支援。</p>
+          <div class="chips" data-group="type">
+            <label class="chip"><input type="radio" name="type" value="A類：客戶知道明確品項，可直接確認規格、文件、報價與交期。">A類：指定品項</label>
+            <label class="chip"><input type="radio" name="type" value="B類：客戶知道用途但不知道品項，需依劑型與功能推薦產品。">B類：知道用途</label>
+            <label class="chip"><input type="radio" name="type" value="C類：客戶需求仍不明確，建議安排技術討論或請主管/原廠協助。">C類：需求不明</label>
+          </div>
+          <p><textarea id="notes" placeholder="其他備註：客戶語氣、預算、急迫性、競爭對手、下次追蹤時間等"></textarea></p>
+        </section>
+      </div>
+
+      <aside class="sticky-panel">
+        <section class="card">
+          <h2>拜訪紀錄</h2>
+          <div class="output" id="reportOutput">填寫左側表單後，點選「產生拜訪紀錄」。</div>
+          <div class="footer-actions">
+            <button onclick="generateReport()">重新產生</button>
+            <button class="ghost-btn" onclick="copyReport()">複製</button>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>追蹤清單 <span class="badge">自動產生</span></h2>
+          <div id="taskList" class="task-list"><p class="small">尚未產生追蹤項目。</p></div>
+        </section>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+    document.getElementById('date').valueAsDate = new Date();
+
+    function checkedValues(selector) {
+      return Array.from(document.querySelectorAll(selector + ' input:checked')).map(i => i.value);
+    }
+
+    function radioValue(name) {
+      const el = document.querySelector('input[name="' + name + '"]:checked');
+      return el ? el.value : '未確認';
+    }
+
+    function val(id) {
+      return document.getElementById(id).value.trim() || '未填寫';
+    }
+
+    function join(values, other) {
+      const arr = [...values];
+      if (other && other !== '未填寫') arr.push(other);
+      return arr.length ? arr.join('、') : '未確認';
+    }
+
+    function buildTasks(data) {
+      const tasks = [];
+      const next = data.next;
+      if (next.includes('寄產品型錄 / TDS')) tasks.push('寄送產品型錄、TDS 或初步產品資料。');
+      if (next.includes('確認規格與文件')) tasks.push('向內部或原廠確認 Spec、COA、DMF、GMP、TSE/BSE 等文件可提供範圍。');
+      if (next.includes('提供樣品')) tasks.push('確認樣品規格、可供量、寄送方式與客戶收件資訊。');
+      if (next.includes('提供報價')) tasks.push('確認需求量、包裝規格、交期與報價條件。');
+      if (next.includes('安排原廠 / 技術討論')) tasks.push('整理客戶處方痛點，安排主管、FAE 或原廠技術討論。');
+      if (next.includes('確認交期與庫存')) tasks.push('確認現貨、進口期、MOQ 與 Lead Time。');
+      if (data.type.includes('B類')) tasks.push('依劑型與功能篩選 2–3 個可推薦品項。');
+      if (data.type.includes('C類')) tasks.push('回頭補問缺漏資訊：劑型、用途、開發階段、法規需求與需求量。');
+      if (tasks.length === 0) tasks.push('完成需求確認後，排定下一次追蹤時間。');
+      return tasks;
+    }
+
+    function generateReport() {
+      const data = {
+        company: val('company'),
+        contact: val('contact'),
+        date: val('date'),
+        visitType: val('visitType'),
+        dosage: join(checkedValues('[data-group="dosage"]'), val('dosageOther')),
+        functionText: join(checkedValues('[data-group="function"]'), val('functionOther')),
+        stage: radioValue('stage'),
+        api: join(checkedValues('[data-group="api"]'), ''),
+        painPoint: val('painPoint'),
+        docs: join(checkedValues('[data-group="docs"]'), val('docOther')),
+        market: val('market'),
+        volume: val('volume'),
+        currentProduct: val('currentProduct'),
+        next: checkedValues('[data-group="next"]'),
+        type: radioValue('type'),
+        notes: val('notes')
+      };
+
+      const tasks = buildTasks(data);
+      const report = `【賦形劑客戶拜訪紀錄】\n\n客戶公司：${data.company}\n聯絡人：${data.contact}\n日期：${data.date}\n拜訪方式：${data.visitType}\n\n一、客戶需求摘要\n劑型：${data.dosage}\n賦形劑功能：${data.functionText}\n開發階段：${data.stage}\nAPI / 處方特性：${data.api}\n客戶痛點：${data.painPoint}\n\n二、法規與商務條件\n文件需求：${data.docs}\n目標市場：${data.market}\n預估需求量：${data.volume}\n目前使用品項 / 競品：${data.currentProduct}\n\n三、業務判斷\n${data.type}\n\n四、客戶希望後續提供\n${data.next.length ? data.next.join('、') : '未確認'}\n\n五、後續追蹤清單\n${tasks.map((t, i) => `${i + 1}. ${t}`).join('\n')}\n\n六、其他備註\n${data.notes}`;
+
+      document.getElementById('reportOutput').textContent = report;
+      const taskList = document.getElementById('taskList');
+      taskList.innerHTML = tasks.map(t => `<label class="task"><input type="checkbox"> <span>${t}</span></label>`).join('');
+    }
+
+    async function copyReport() {
+      const text = document.getElementById('reportOutput').textContent;
+      try {
+        await navigator.clipboard.writeText(text);
+        alert('已複製拜訪紀錄');
+      } catch (e) {
+        alert('瀏覽器不支援自動複製，請手動選取文字複製。');
+      }
+    }
+
+    function resetForm() {
+      if (!confirm('確定要清空目前填寫內容？')) return;
+      document.querySelectorAll('input[type="text"], textarea').forEach(el => el.value = '');
+      document.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach(el => el.checked = false);
+      document.getElementById('date').valueAsDate = new Date();
+      document.getElementById('reportOutput').textContent = '填寫左側表單後，點選「產生拜訪紀錄」。';
+      document.getElementById('taskList').innerHTML = '<p class="small">尚未產生追蹤項目。</p>';
+    }
+  </script>
+</body>
+</html>
