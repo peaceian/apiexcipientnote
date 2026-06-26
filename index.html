@@ -534,7 +534,7 @@ document.addEventListener('DOMContentLoaded',function(){
       };
 
       const tasks = buildTasks(data);
-      const report = `【賦形劑客戶拜訪紀錄】\n\n客戶公司：${data.company}\n聯絡人：${data.contact}\n日期：${data.date}\n拜訪方式：${data.visitType}\n\n一、客戶需求摘要\n劑型：${data.dosage}\n賦形劑功能：${data.functionText}\n開發階段：${data.stage}\nAPI / 處方特性：${data.api}\n客戶痛點：${data.painPoint}\n\n二、法規與商務條件\n文件需求：${data.docs}\n目標市場：${data.market}\n預估需求量：${data.volume}\n目前使用品項 / 競品：${data.currentProduct}\n\n三、業務判斷\n${data.type}\n\n四、客戶希望後續提供\n${data.next.length ? data.next.join('、') : '未確認'}\n\n五、後續追蹤清單\n${tasks.map((t, i) => `${i + 1}. ${t}`).join('\n')}\n\n六、其他備註\n${data.notes}`;
+      const report = `【賦形劑客戶拜訪紀錄】\n\n客戶公司：${data.company}\n聯絡人：${data.contact}\n日期：${data.date}\n拜訪方式：${data.visitType}\n\n一、客戶需求摘要\n劑型：${data.dosage}\n賦形劑功能：${data.functionText}\n開發階段：${data.stage}\nAPI / 處方特性：${data.api}\n客戶痛點：${data.painPoint}\n\n二、法規與商務條件\n文件需求：${data.docs}\n目標市場：${data.market}\n藥典需求：${data.pharmacopoeia}\n預估需求量：${data.volume}\n目前使用品項 / 競品：${data.currentProduct}\n\n三、業務判斷\n${data.type}\n\n四、客戶希望後續提供\n${data.next.length ? data.next.join('、') : '未確認'}\n\n五、後續追蹤清單\n${tasks.map((t, i) => `${i + 1}. ${t}`).join('\n')}\n\n六、其他備註\n${data.notes}`;
 
       document.getElementById('reportOutput').textContent = report;
       const taskList = document.getElementById('taskList');
